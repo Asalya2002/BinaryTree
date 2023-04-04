@@ -4,9 +4,7 @@
 #include <iostream>
 #include <random>
 using namespace std;
-class BinaryTree
-{
-    class Node
+class Node
     {
     public:
         int key;
@@ -33,12 +31,14 @@ class BinaryTree
         friend class BinaryTree;
         int m_key = 0;             //ключ
         Node* m_leftChild = nullptr;   //указатель на левого потомка данной вершины.
-    Node* m_rightChild = nullptr;// указатель на правого потомка данной вершины.
-    }; 
- private:
+        Node* m_rightChild = nullptr;// указатель на правого потомка данной вершины.
+    };
+
+class BinaryTree
+{
+private:
     Node* m_root = nullptr;  //указатель на корень дерева.
-    
-  public:
+public:
     BinaryTree() = default; //конструктор по умолчанию 
     BinaryTree(const BinaryTree&) = default;  //конструктор  копирования
     ~BinaryTree() { delete m_root; }  //деструктор
@@ -54,17 +54,17 @@ class BinaryTree
     int sum_k(Node* root, int key); // получение суммы всех ключей дерева
     void printHorizontal() const; //Вывод двоичного дерева 
     void printMinMax(Node* root);// получение минимального максимального ключа дерева;
-
-    BinaryTree::Node* root() const
+};
+    Node* BinaryTree::root() const
     {
         return m_root;
     }
-    Node* addNode(int key)  //Вспомогательная функция, для добавления узла относительно корня
+    Node* BinaryTree::addNode(int key)  //Вспомогательная функция, для добавления узла относительно корня
     {
         m_root = addNode(m_root, key);
         return m_root;
     }
-    Node* addNode(Node* root, int key)
+    Node* BinaryTree::addNode(Node* root, int key)
     {
         if (!root) {
             root = new Node(key);
@@ -77,155 +77,153 @@ class BinaryTree
         }
 
         return root;
-
-    }
-    bool isEmpty(Node* root)
+}
+bool isEmpty(Node* root)
+{
+    if (!root)
     {
-        if (!root)
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+void Deletesubtree(Node* Subroot)
+{
+    if (Subroot != NULL)
+        Deletesubtree(Subroot->leftChild);
+    Deletesubtree(Subroot->rightChild);
+    delete Subroot;
+}
+bool DeleteUzel(Node* root)
+{
+    if (root != NULL)
+    {
+        DeleteUzel((root)->leftChild);
+        DeleteUzel((root)->rightChild);
+        delete& (root)->key;
+        delete root;
+        return true;
+    }
+}
+void printHorizontal(Node* root, int marginLeft, int levelSpacing) 
+{
+    if (root == nullptr) {
+        return;
+    }
+    printHorizontal(root->rightChild, marginLeft + levelSpacing, levelSpacing);
+    cout << string(marginLeft, ' ') << root->key << endl;
+    printHorizontal(root->leftChild, marginLeft + levelSpacing, levelSpacing);
+}
+// Рекурсивная функция для вычисления высоты заданного бинарного дерева
+int height(Node* root)
+{
+    // базовый случай: пустое дерево имеет высоту 0
+    if (root == nullptr) {
+        return 0;
+    }
+    // повторяем для левого и правого поддерева и учитываем максимальную глубину
+    return 1 + max(height(root->leftChild), height(root->rightChild));
+}
+int NodeCount(Node* root)  //поиск числа узлов
+{
+    if (root->leftChild == NULL && root->rightChild == NULL)
+        return 1;
+    int left, right;
+    if (root->leftChild != NULL)
+        left = NodeCount(root->leftChild);
+    else
+        left = 0;
+    if (root->rightChild != NULL)
+        right = NodeCount(root->rightChild);
+    else
+        right = 0;
+
+    return left + right + 1;
+}
+void printMinMax(Node* root) {
+    if (root == NULL)
+    {
+        cout << "Tree is empty";
+        return;
+    }
+    Node* current = root;
+
+    Node* pre;
+
+    // Максимальная переменная для хранения максимального значения  
+    int max_value = INT_MIN;
+
+    // Переменная  Min для сохранения минимального значения
+    int min_value = INT_MAX;
+    while (current != NULL)
+    {
+        // Если левый дочерний элемент не существует
+        if (current->leftChild == NULL)
         {
-            return true;
+            max_value = max(max_value, current->key);
+            min_value = min(min_value, current->key);
+
+            current = current->rightChild;
         }
         else
         {
-            return false;
-        }
-    }
-    void Deletesubtree(Node* Subroot)
-    {
-        if (Subroot != NULL)
-            Deletesubtree(Subroot->leftChild);
-        Deletesubtree(Subroot->rightChild);
-        delete Subroot;
-    }
-    bool DeleteUzel(Node* root)
-    {
-        if (root != NULL)
-        {
-            DeleteUzel((root)->leftChild);
-            DeleteUzel((root)->rightChild);
-            delete& (root)->key;
-            delete root;
-            return true;
-        }
-    }
-    void printHorizontal(Node* root, int marginLeft, int levelSpacing) const
-    {
-        if (root == nullptr) {
-            return;
-        }
-        printHorizontal(root->rightChild, marginLeft + levelSpacing, levelSpacing);
-        cout << string(marginLeft, ' ') << root->key << endl;
-        printHorizontal(root->leftChild, marginLeft + levelSpacing, levelSpacing);
-    }
-    // Рекурсивная функция для вычисления высоты заданного бинарного дерева
-    int height(Node* root)
-    {
-        // базовый случай: пустое дерево имеет высоту 0
-        if (root == nullptr) {
-            return 0;
-        }
-        // повторяем для левого и правого поддерева и учитываем максимальную глубину
-        return 1 + max(height(root->leftChild), height(root->rightChild));
-    }
-    int NodeCount(Node* root)  //поиск числа узлов
-    {
-        if (root->leftChild == NULL && root->rightChild == NULL)
-            return 1;
-        int left, right;
-        if (root->leftChild != NULL)
-            left = NodeCount(root->leftChild);
-        else
-            left = 0;
-        if (root->rightChild != NULL)
-            right = NodeCount(root->rightChild);
-        else
-            right = 0;
+            // Найти порядок, предшествующий текущему
+            pre = current->leftChild;
+            while (pre->rightChild != NULL && pre->rightChild != current)
+                pre = pre->rightChild;
 
-        return left + right + 1;
-    }
-    void printMinMax(Node* root) {
-        if (root == NULL)
-        {
-            cout << "Tree is empty";
-            return;
-        }
-        Node* current = root;
-
-        Node* pre;
-
-        // Максимальная переменная для хранения максимального значения  
-        int max_value = INT_MIN;
-
-        // Переменная  Min для сохранения минимального значения
-        int min_value = INT_MAX;
-        while (current != NULL)
-        {
-            // Если левый дочерний элемент не существует
-            if (current->leftChild == NULL)
+            // Сделать current правым дочерним элементом
+ // своего предшественника по порядку
+            if (pre->rightChild == NULL)
             {
+                pre->rightChild = current;
+                current = current->leftChild;
+            }
+
+            // Верните изменения, внесенные в части 'if', чтобы
+// восстановить исходное дерево, т.е. исправить
+// правый дочерний элемент предшественника
+            else
+            {
+                pre->rightChild = NULL;
+
                 max_value = max(max_value, current->key);
                 min_value = min(min_value, current->key);
 
                 current = current->rightChild;
-            }
-            else
-            {
-                // Найти порядок, предшествующий текущему
-                pre = current->leftChild;
-                while (pre->rightChild != NULL && pre->rightChild != current)
-                    pre = pre->rightChild;
+            } // Конец условия if pre->right == NULL
 
-                // Сделать current правым дочерним элементом
-     // своего предшественника по порядку
-                if (pre->rightChild == NULL)
-                {
-                    pre->rightChild = current;
-                    current = current->leftChild;
-                }
+        } // Конец текущего условия if->оставлено == NULL
 
-                // Верните изменения, внесенные в части 'if', чтобы
-    // восстановить исходное дерево, т.е. исправить
-    // правый дочерний элемент предшественника
-                else
-                {
-                    pre->rightChild = NULL;
-
-                    max_value = max(max_value, current->key);
-                    min_value = min(min_value, current->key);
-
-                    current = current->rightChild;
-                } // Конец условия if pre->right == NULL
-
-            } // Конец текущего условия if->оставлено == NULL
-
-        }
-
-        // Наконец, выведите максимальное и минимальное значения
-        cout << "Max Value is : " << max_value << endl;
-        cout << "Min Value is : " << min_value << endl;
     }
-    bool isBalanced(Node* root)
-    {
-        //высота для левого поддерева
-        int lh;
 
-        //высота для правого поддерева
-        int rh;
+    // Наконец, выведите максимальное и минимальное значения
+    cout << "Max Value is : " << max_value << endl;
+    cout << "Min Value is : " << min_value << endl;
+}
+bool isBalanced(Node* root)
+{
+    //высота для левого поддерева
+    int lh;
 
-        // Если дерево пустое, то вернет значение true
-        if (root == NULL)
-            return 1;
+    //высота для правого поддерева
+    int rh;
+// Если дерево пустое, то вернет значение true
+if (root == NULL)
+return 1;
 
-        //Получите высоту левого и правого поддеревьев
-        lh = height(root->leftChild);
-        rh = height(root->rightChild);
+//Получите высоту левого и правого поддеревьев
+lh = height(root->leftChild);
+rh = height(root->rightChild);
 
-        if (abs(lh - rh) <= 1 && isBalanced(root->leftChild)
-            && isBalanced(root->rightChild))
-            return 1;
+if (abs(lh - rh) <= 1 && isBalanced(root->leftChild)
+    && isBalanced(root->rightChild))
+    return 1;
 
-        // Если мы доберемся сюда, то дерево не будет сбалансировано по высоте
-        return 0;
+// Если мы доберемся сюда, то дерево не будет сбалансировано по высоте
+return 0;
     }
     int sum_k(Node* root, int key) // получение суммы всех ключей дерева
     {
@@ -237,15 +235,7 @@ class BinaryTree
         }
         return sum;
     }
-    BinaryTree& operator=(const BinaryTree& root) //присваивание
-    {
-        if (this != &root)
-        {
-            this->~BinaryTree();
-
-        }
-        return *this;
-    }
+    
 
     int main()
     {
@@ -267,6 +257,7 @@ class BinaryTree
         system("pause");
         return 0;
     }
-};
+
+
 
 
